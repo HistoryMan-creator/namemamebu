@@ -294,28 +294,39 @@ body::after{
 /* ── YEAR INPUT ZONE ── */
 #year-zone{
   display:flex;align-items:center;justify-content:center;
-  gap:clamp(6px,3vw,20px);margin-bottom:4px;flex-shrink:0;
+  gap:clamp(4px,2vw,12px);margin-bottom:4px;flex-shrink:0;
+  width:100%;padding:0 4px;
+  box-sizing:border-box;
 }
-.ygroup{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.ygroup-lbl{font-size:9px;letter-spacing:3px;color:var(--textd);text-transform:uppercase;}
-.drow{display:flex;gap:clamp(3px,1.2vw,6px);}
+.ygroup{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  flex:1;min-width:0;
+}
+.ygroup-lbl{font-size:9px;letter-spacing:2px;color:var(--textd);text-transform:uppercase;}
+.drow{
+  display:flex;gap:clamp(2px,1vw,5px);
+  width:100%;
+}
 .ysep{
-  font-family:'Cinzel',serif;font-size:clamp(20px,5vw,32px);
+  font-family:'Cinzel',serif;
+  font-size:clamp(14px,3.5vw,26px);
   color:var(--goldd);align-self:flex-end;padding-bottom:8px;
   flex-shrink:0;transition:color .3s;
+  width:clamp(14px,3.5vw,24px);text-align:center;
 }
 .ysep.lit{color:var(--gold);}
 
-/* ── DIGIT BOX ── */
+/* ── DIGIT BOX ── flex:1 so each box fills its share of the row */
 .dbox{
-  width:clamp(46px,12vw,64px);
-  height:clamp(58px,15vw,80px);
+  flex:1;min-width:0;
+  height:clamp(50px,14vw,76px);
   border:2px solid var(--goldd);
   display:flex;align-items:center;justify-content:center;
   font-family:'Courier Prime',monospace;
-  font-size:clamp(22px,6vw,34px);font-weight:700;
+  font-size:clamp(18px,5vw,32px);font-weight:700;
   color:var(--goldb);background:var(--bg2);
-  position:relative;transition:border-color .12s,background .12s,box-shadow .12s,transform .12s;
+  position:relative;
+  transition:border-color .12s,background .12s,box-shadow .12s,transform .12s;
   border-radius:2px;
 }
 /* IDEA 5: long-press glow */
@@ -638,9 +649,9 @@ body::after{
   #ruler-ep{font-size:10px;}
   #timeline-labels{font-size:8px;}
   .dbox{
-    width:clamp(38px,9vw,52px);
-    height:clamp(48px,11vw,60px);
-    font-size:clamp(18px,4.5vw,26px);
+    width:clamp(32px, calc((100vw - 340px) / 8), 52px);
+    height:clamp(40px, calc((100vw - 340px) / 8 * 1.25), 62px);
+    font-size:clamp(16px, calc((100vw - 340px) / 8 * 0.55), 26px);
   }
   .npb{height:clamp(36px,9vw,46px);font-size:clamp(16px,4vw,22px);}
   #numpad{max-width:200px;gap:4px;}
