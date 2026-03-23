@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ДОПРОС · Правители России · ЕГЭ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   RESET & ROOT
+═══════════════════════════════════════ */
+:root {
+  --bg:    #06060a;
+  --bg2:   #0c0c14;
+  --bg3:   #12121e;
+  --gold:  #c8902a;
+  --goldb: #e8c060;
+  --goldd: #4a3008;
+  --goldm: #8a6018;
+  --red:   #b82020;
+  --redb:  #ff7070;
+  --green: #1a9040;
+  --greenb:#60e890;
+  --blue:  #4080c0;
+  --text:  #ddd0b8;
+  --textd: #504838;
+  --white: #f0e8d8;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+html{
+  height:100%; height:-webkit-fill-available;
+  overflow:hidden; touch-action:none;
+}
+body{
+  min-height:100vh; min-height:-webkit-fill-available;
+  background:var(--bg);
+  font-family:'Courier Prime',monospace;
+  color:var(--text);
+  overflow:hidden;
+  position:fixed; width:100%; height:100%;
+  padding-top:var(--safe-t);
+  padding-bottom:var(--safe-b);
+  padding-left:var(--safe-l);
+  padding-right:var(--safe-r);
+}
+
+/* grain */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.45;
+}
+
+/* ═══════════════════════════════════════
+   OVERLAY FLASHS
+═══════════════════════════════════════ */
+.flash-ov{position:fixed;inset:0;pointer-events:none;z-index:8000;opacity:0;transition:opacity .05s;}
+#fl-wrong{background:rgba(184,32,32,.1);}
+#fl-correct{background:rgba(26,144,64,.07);}
+#fl-combo{background:rgba(200,144,42,.08);}
+.flash-ov.on{opacity:1;}
+
+/* ═══════════════════════════════════════
+   ERA TRANSITION OVERLAY — IDEA 1
+═══════════════════════════════════════ */
+#era-veil{
+  position:fixed;inset:0;z-index:7000;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  opacity:0;pointer-events:none;transition:opacity .35s;
+}
+#era-veil.show{opacity:1;pointer-events:all;}
+#ev-icon{font-size:60px;}
+#ev-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:5px;color:var(--goldm);text-transform:uppercase;}
+#ev-title{font-family:'Cinzel',serif;font-size:clamp(20px,5vw,34px);font-weight:900;color:var(--goldb);letter-spacing:4px;text-align:center;}
+#ev-years{font-size:13px;color:var(--textd);letter-spacing:2px;}
+
+/* lock stamp */
+#lock-stamp{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;z-index:6500;opacity:0;
+}
+#ls-inner{
+  font-family:'Cinzel',serif;font-weight:900;letter-spacing:6px;
+  color:var(--goldb);border:3px solid var(--goldb);
+  padding:12px 28px;background:rgba(6,6,10,.95);
+  box-shadow:0 0 40px rgba(232,192,96,.3);
+}
+#lock-stamp.show{opacity:1;animation:lsPop .45s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes lsPop{
+  from{opacity:0;transform:scale(1.8) rotate(-6deg);}
+  to{opacity:1;transform:scale(1) rotate(-3deg);}
+}
+
+/* ═══════════════════════════════════════
+   START SCREEN
+═══════════════════════════════════════ */
+#start-screen{
+  position:fixed;inset:0;z-index:6000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  padding:20px 16px 20px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+#start-screen.hidden{display:none;}
+
+.ss-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(26px,7vw,48px);font-weight:900;
+  color:var(--goldb);letter-spacing:5px;
+  text-shadow:0 0 30px rgba(232,192,96,.25);
+  margin-top:12px;
+}
+.ss-sub{font-size:11px;letter-spacing:3px;color:var(--textd);margin-bottom:16px;}
+.ss-div{width:60px;height:1px;background:var(--goldd);margin:0 auto 16px;}
+.ss-lbl{font-size:10px;letter-spacing:4px;color:var(--textd);margin-bottom:10px;text-transform:uppercase;}
+
+/* ── GLOBAL STATS ROW ── */
+.ss-stats{display:flex;gap:10px;width:100%;max-width:380px;margin-bottom:16px;}
+.ss-stat{
+  flex:1;background:var(--bg2);border:1px solid var(--goldd);
+  padding:10px 6px;text-align:center;
+}
+.ss-stat-v{font-family:'Cinzel',serif;font-size:20px;font-weight:900;color:var(--goldb);display:block;}
+.ss-stat-l{font-size:9px;letter-spacing:2px;color:var(--textd);text-transform:uppercase;}
+
+/* ── ERA BUTTONS ── */
+.era-btns{display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;padding-bottom:8px;}
+.era-btn{
+  background:var(--bg2);border:1px solid var(--goldd);
+  color:var(--text);font-family:'Cinzel',serif;
+  font-size:clamp(11px,3vw,14px);letter-spacing:2px;
+  padding:14px 16px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+  text-align:left;min-height:52px;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;
+}
+.era-btn:hover,.era-btn:active{border-color:var(--gold);background:var(--bg3);}
+.era-btn.all{border-color:var(--gold);background:rgba(200,144,42,.07);font-weight:700;color:var(--goldb);}
+.era-btn-sub{font-size:9px;letter-spacing:1px;color:var(--textd);margin-top:2px;}
+.era-progress{
+  width:100%;height:2px;background:var(--goldd);margin-top:4px;
+  position:relative;overflow:hidden;
+}
+.era-progress-fill{height:100%;background:var(--gold);transition:width .3s;}
+.era-count{font-size:12px;color:var(--goldm);white-space:nowrap;font-weight:700;}
+
+/* ═══════════════════════════════════════
+   MAIN APP LAYOUT
+═══════════════════════════════════════ */
+#app{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+/* ── TOP BAR ── */
+#topbar{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;
+  border-bottom:1px solid rgba(200,144,42,.1);
+  min-height:44px;
+}
+#tb-queue-label{
+  font-size:10px;letter-spacing:2px;color:var(--textd);
+  white-space:nowrap;flex-shrink:0;
+}
+#tb-dots{
+  display:flex;gap:4px;flex-wrap:wrap;
+  align-items:center;flex:1;margin:0 8px;overflow:hidden;max-height:28px;
+}
+.qdot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--textd);opacity:.25;
+  transition:all .3s;flex-shrink:0;
+}
+.qdot.cur{background:var(--gold);opacity:1;box-shadow:0 0 7px rgba(200,144,42,.8);animation:dpulse 1.1s infinite;}
+.qdot.done{background:var(--goldb);opacity:.85;border-radius:2px;}
+.qdot.hard{background:var(--red);opacity:.6;}
+@keyframes dpulse{0%,100%{box-shadow:0 0 5px rgba(200,144,42,.5);}50%{box-shadow:0 0 12px rgba(200,144,42,1);}}
+#tb-score{font-size:11px;color:var(--textd);white-space:nowrap;flex-shrink:0;}
+#tb-score .c{color:var(--greenb);}
+#tb-score .w{color:var(--redb);}
+
+/* ── ERA BAR ── */
+#erabar{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 12px 3px;
+  border-bottom:1px solid rgba(200,144,42,.07);
+  min-height:28px;
+}
+#era-name{font-size:10px;letter-spacing:3px;color:var(--goldm);}
+#combo-display{font-size:11px;color:var(--textd);transition:color .3s;}
+#combo-display.active{color:var(--goldb);}
+
+/* ── MAIN DRILL AREA ── */
+#drill{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+  padding:6px 12px 4px;
+  min-height:0;
+}
+
+/* ── TIMELINE MINIBAR — IDEA 2 ── */
+#timeline-bar{
+  width:100%;max-width:400px;height:6px;
+  background:var(--bg3);border-radius:3px;
+  margin-bottom:6px;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+#timeline-fill{
+  position:absolute;top:0;left:0;height:100%;
+  background:linear-gradient(90deg,var(--goldd),var(--gold));
+  border-radius:3px;transition:width .6s ease;
+}
+#timeline-dot{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:var(--goldb);border:2px solid var(--bg);
+  box-shadow:0 0 8px rgba(232,192,96,.6);
+  transition:left .6s ease;
+}
+#timeline-labels{
+  display:flex;justify-content:space-between;
+  width:100%;max-width:400px;margin-bottom:4px;
+  font-size:9px;letter-spacing:1px;color:var(--textd);
+}
+
+/* ── RULER INFO ── */
+#ruler-sym{font-size:clamp(32px,7vw,50px);margin-bottom:2px;line-height:1;filter:drop-shadow(0 0 8px rgba(200,144,42,.2));flex-shrink:0;}
+#ruler-name{
+  font-family:'Cinzel',serif;
+  font-size:clamp(16px,4.5vw,28px);font-weight:900;
+  color:var(--white);text-align:center;margin-bottom:2px;
+  letter-spacing:1px;line-height:1.1;flex-shrink:0;
+}
+#ruler-ep{font-size:clamp(10px,2.5vw,13px);color:var(--textd);text-align:center;margin-bottom:6px;font-style:italic;flex-shrink:0;}
+
+/* ── WRONG HISTORY BADGE — IDEA 3 ── */
+#wrong-badge{
+  display:none;align-items:center;gap:5px;
+  background:rgba(184,32,32,.12);border:1px solid rgba(184,32,32,.3);
+  padding:3px 10px;margin-bottom:5px;
+  font-size:11px;color:var(--redb);
+}
+#wrong-badge.show{display:flex;}
+
+/* ── INFO BOX ── */
+#info-box{
+  background:rgba(200,144,42,.05);
+  border-left:2px solid var(--goldd);
+  padding:6px 12px;margin-bottom:6px;
+  width:100%;max-width:420px;
+  opacity:0;transition:opacity .3s;
+  display:none;flex-shrink:0;
+}
+#info-box.vis{opacity:1;display:block;}
+#info-years{
+  font-size:clamp(12px,3vw,15px);font-weight:700;
+  color:var(--goldb);letter-spacing:2px;margin-bottom:3px;display:block;
+}
+.ifact{font-size:clamp(10px,2.5vw,12px);color:var(--text);line-height:1.4;padding:1px 0;}
+.ifact::before{content:'· ';color:var(--goldm);}
+
+/* ── CONSEC DOTS ── */
+#consec{display:flex;gap:5px;margin-bottom:5px;flex-shrink:0;}
+.cdot{width:7px;height:7px;border-radius:50%;background:var(--goldd);opacity:.4;transition:all .3s;}
+.cdot.on{background:var(--green);opacity:1;box-shadow:0 0 6px rgba(26,144,64,.5);}
+
+/* ── NEIGHBOR HINT — IDEA 4 ── */
+#neighbor-hint{
+  display:none;width:100%;max-width:400px;
+  padding:5px 10px;margin-bottom:4px;
+  background:rgba(64,128,192,.08);border:1px solid rgba(64,128,192,.2);
+  font-size:11px;color:#80b0e0;text-align:center;letter-spacing:.5px;
+}
+#neighbor-hint.show{display:block;}
+
+/* ── YEAR INPUT ZONE ── */
+#year-zone{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(6px,3vw,20px);margin-bottom:4px;flex-shrink:0;
+}
+.ygroup{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.ygroup-lbl{font-size:9px;letter-spacing:3px;color:var(--textd);text-transform:uppercase;}
+.drow{display:flex;gap:clamp(3px,1.2vw,6px);}
+.ysep{
+  font-family:'Cinzel',serif;font-size:clamp(20px,5vw,32px);
+  color:var(--goldd);align-self:flex-end;padding-bottom:8px;
+  flex-shrink:0;transition:color .3s;
+}
+.ysep.lit{color:var(--gold);}
+
+/* ── DIGIT BOX ── */
+.dbox{
+  width:clamp(46px,12vw,64px);
+  height:clamp(58px,15vw,80px);
+  border:2px solid var(--goldd);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Courier Prime',monospace;
+  font-size:clamp(22px,6vw,34px);font-weight:700;
+  color:var(--goldb);background:var(--bg2);
+  position:relative;transition:border-color .12s,background .12s,box-shadow .12s,transform .12s;
+  border-radius:2px;
+}
+/* IDEA 5: long-press glow */
+.dbox.hold{border-color:var(--blue) !important;box-shadow:0 0 16px rgba(64,128,192,.4) !important;animation:holdPulse .6s infinite alternate;}
+@keyframes holdPulse{from{box-shadow:0 0 10px rgba(64,128,192,.2);}to{box-shadow:0 0 22px rgba(64,128,192,.6);}}
+.dbox.cur{
+  border-color:var(--gold);
+  box-shadow:0 0 16px rgba(200,144,42,.25),inset 0 0 6px rgba(200,144,42,.04);
+}
+.dbox.cur::after{
+  content:'';position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  width:16px;height:2px;background:var(--gold);
+  animation:blink .8s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.dbox.filled{border-color:rgba(200,144,42,.35);}
+/* IDEA 9: combo gold border */
+.dbox.combo-gold{border-color:var(--gold) !important;}
+.dbox.ok-flash{animation:okStamp .35s ease;border-color:var(--green) !important;background:rgba(26,144,64,.08) !important;color:var(--greenb) !important;}
+@keyframes okStamp{0%{transform:scale(1.18);}60%{transform:scale(0.94);}100%{transform:scale(1);}}
+.dbox.err-flash{animation:errShake .36s ease;border-color:var(--red) !important;background:rgba(184,32,32,.1) !important;color:var(--redb) !important;}
+@keyframes errShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}50%{transform:translateX(7px);}75%{transform:translateX(-5px);}}
+
+/* ── PEEK LIVES — IDEA 5 ── */
+#peek-lives{
+  display:flex;gap:6px;align-items:center;margin-bottom:3px;flex-shrink:0;
+}
+#peek-lbl{font-size:9px;letter-spacing:2px;color:var(--textd);}
+.peek-pip{width:12px;height:12px;border-radius:50%;background:var(--blue);opacity:.7;transition:all .3s;}
+.peek-pip.used{background:var(--textd);opacity:.2;}
+
+/* ── PHASE HINT ── */
+#phase-hint{
+  font-size:10px;letter-spacing:2px;color:var(--gold);
+  min-height:16px;text-align:center;margin-bottom:2px;flex-shrink:0;
+}
+
+/* ── ERROR HINT ── */
+#err-hint{
+  font-size:12px;color:var(--textd);text-align:center;
+  min-height:18px;margin-bottom:3px;transition:all .3s;flex-shrink:0;
+}
+#err-hint.show{color:var(--redb);}
+#err-hint.digit{color:rgba(200,144,42,.55);letter-spacing:3px;font-weight:700;}
+
+/* ── SPEED TIMER — IDEA 6 ── */
+#speed-bar{
+  width:100%;max-width:400px;height:3px;
+  background:var(--bg3);margin-bottom:3px;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+#speed-fill{
+  height:100%;background:var(--green);
+  transition:width .1s linear,background .5s;
+  width:100%;
+}
+
+/* ── NUMPAD ── */
+#numpad{
+  flex-shrink:0;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(5px,1.5vw,8px);
+  width:100%;max-width:260px;
+  padding-bottom:4px;
+}
+.npb{
+  background:var(--bg2);
+  border:1px solid rgba(200,144,42,.12);
+  color:var(--text);font-family:'Courier Prime',monospace;
+  font-size:clamp(18px,5vw,24px);font-weight:700;
+  height:clamp(44px,12vw,58px);min-height:44px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .1s,transform .1s;border-radius:3px;
+  -webkit-tap-highlight-color:transparent;
+  /* IDEA 9: combo glow applied via class */
+}
+.npb:active{transform:scale(.88);background:var(--bg);}
+.npb.del{font-size:16px;color:var(--textd);}
+.npb.del:active{color:var(--redb);}
+/* combo gold numpad */
+#numpad.combo .npb:not(.del){
+  border-color:rgba(232,192,96,.35);
+  box-shadow:inset 0 0 8px rgba(232,192,96,.04);
+}
+
+/* ══════════════════════════════════════
+   SESSION COMPLETE SCREEN
+══════════════════════════════════════ */
+#end-screen{
+  position:fixed;inset:0;z-index:5500;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:12px 14px 24px;
+  opacity:0;pointer-events:none;transition:opacity .5s;
+  gap:12px;
+}
+#end-screen.show{opacity:1;pointer-events:all;}
+
+/* ── REPORT CARD (the shareable part) ── */
+#report-card{
+  width:100%;max-width:420px;
+  background:var(--bg2);
+  border:1px solid var(--goldm);
+  position:relative;overflow:hidden;
+  /* screenshot-friendly: no outside elements needed */
+}
+/* gold corner ornaments */
+#report-card::before,#report-card::after{
+  content:'';position:absolute;width:24px;height:24px;
+  border-color:var(--goldb);border-style:solid;
+}
+#report-card::before{top:8px;left:8px;border-width:2px 0 0 2px;}
+#report-card::after{bottom:8px;right:8px;border-width:0 2px 2px 0;}
+
+/* card header */
+.rc-header{
+  padding:14px 20px 10px;
+  border-bottom:1px solid var(--goldd);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.rc-app-label{
+  font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:4px;color:var(--goldm);text-transform:uppercase;
+}
+.rc-session-num{
+  font-family:'Courier Prime',monospace;font-size:11px;
+  color:var(--textd);letter-spacing:2px;
+}
+
+/* grade + title row */
+.rc-hero{
+  padding:16px 20px 12px;
+  display:flex;align-items:center;gap:16px;
+  border-bottom:1px solid var(--goldd);
+}
+.rc-grade{
+  font-family:'Cinzel',serif;font-size:52px;font-weight:900;
+  line-height:1;flex-shrink:0;
+  background:linear-gradient(135deg,var(--goldb),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 12px rgba(232,192,96,.4));
+}
+.rc-hero-right{flex:1;}
+.rc-session-title{
+  font-family:'Cinzel',serif;font-size:clamp(14px,3.5vw,18px);
+  font-weight:900;color:var(--white);margin-bottom:2px;letter-spacing:1px;
+}
+.rc-date{font-size:11px;color:var(--textd);letter-spacing:1px;margin-bottom:6px;}
+.rc-meta-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.rc-pill{
+  font-size:10px;letter-spacing:1px;
+  padding:2px 8px;border-radius:2px;
+  background:rgba(200,144,42,.1);border:1px solid var(--goldd);
+  color:var(--goldm);
+}
+.rc-pill.green{background:rgba(26,144,64,.1);border-color:rgba(26,144,64,.3);color:var(--greenb);}
+.rc-pill.red{background:rgba(184,32,32,.1);border-color:rgba(184,32,32,.3);color:var(--redb);}
+
+/* big numbers row */
+.rc-numbers{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid var(--goldd);
+}
+.rc-num-cell{
+  padding:10px 6px;text-align:center;
+  border-right:1px solid var(--goldd);
+}
+.rc-num-cell:last-child{border-right:none;}
+.rc-num-v{
+  font-family:'Cinzel',serif;font-size:clamp(18px,4vw,24px);font-weight:900;
+  color:var(--goldb);display:block;line-height:1;margin-bottom:2px;
+}
+.rc-num-v.green{color:var(--greenb);}
+.rc-num-v.red{color:var(--redb);}
+.rc-num-l{font-size:8px;letter-spacing:2px;color:var(--textd);text-transform:uppercase;}
+
+/* section label inside card */
+.rc-section{
+  padding:8px 20px 4px;
+  font-size:9px;letter-spacing:4px;color:var(--goldm);
+  text-transform:uppercase;border-bottom:1px solid var(--goldd);
+}
+
+/* ruler rows */
+.rc-rulers{padding:4px 0;}
+.rc-row{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 16px;
+  border-bottom:1px solid rgba(200,144,42,.06);
+  transition:background .15s;
+}
+.rc-row:last-child{border-bottom:none;}
+.rc-row-num{
+  font-size:9px;color:var(--textd);
+  width:14px;text-align:right;flex-shrink:0;
+}
+.rc-row-sym{font-size:20px;flex-shrink:0;width:26px;text-align:center;}
+.rc-row-info{flex:1;min-width:0;}
+.rc-row-name{
+  font-family:'Cinzel',serif;font-size:11px;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:1px;
+}
+.rc-row-dates{
+  font-family:'Courier Prime',monospace;font-size:12px;
+  font-weight:700;color:var(--goldb);
+}
+.rc-row-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+/* error dots */
+.rc-dots{display:flex;gap:2px;}
+.rc-dot{width:6px;height:6px;border-radius:50%;}
+.rc-dot.clean{background:var(--green);box-shadow:0 0 4px rgba(26,144,64,.5);}
+.rc-dot.warn{background:var(--gold);}
+.rc-dot.bad{background:var(--red);}
+/* locked badge */
+.rc-lock{
+  font-size:9px;letter-spacing:1px;padding:1px 5px;
+  background:rgba(232,192,96,.12);border:1px solid var(--goldd);
+  color:var(--goldm);
+}
+.rc-lock.yes{background:rgba(26,144,64,.1);border-color:rgba(26,144,64,.3);color:var(--greenb);}
+
+/* card footer */
+.rc-footer{
+  padding:8px 20px;border-top:1px solid var(--goldd);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.rc-footer-brand{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--textd);}
+.rc-footer-hint{font-size:9px;color:var(--textd);letter-spacing:1px;}
+
+/* motivation message */
+.rc-msg{
+  padding:10px 20px 6px;
+  font-size:12px;color:var(--text);
+  font-style:italic;line-height:1.5;
+  border-top:1px solid var(--goldd);
+  text-align:center;
+}
+
+/* action buttons — OUTSIDE the card */
+.es-btn{
+  background:var(--gold);color:#060608;font-family:'Cinzel',serif;
+  font-size:13px;letter-spacing:3px;font-weight:900;
+  border:none;padding:15px;cursor:pointer;
+  width:100%;max-width:420px;
+  transition:background .2s;min-height:52px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.es-btn:hover,.es-btn:active{background:var(--goldb);}
+.es-btn-sec{
+  background:transparent;color:var(--textd);font-family:'Cinzel',serif;
+  font-size:11px;letter-spacing:3px;border:1px solid var(--goldd);
+  padding:12px;cursor:pointer;width:100%;max-width:420px;
+  transition:all .2s;min-height:48px;
+}
+.es-btn-sec:active{border-color:var(--gold);color:var(--gold);}
+/* screenshot hint */
+.es-screenshot-hint{
+  font-size:10px;color:var(--textd);letter-spacing:2px;
+  text-align:center;max-width:420px;
+}
+/* session progress bar (top of end screen) */
+#sesh-progress-wrap{width:100%;max-width:420px;}
+#sesh-progress-label{font-size:10px;letter-spacing:2px;color:var(--textd);margin-bottom:4px;text-align:center;}
+#sesh-prog-track{height:4px;background:var(--goldd);position:relative;}
+#sesh-prog-fill{height:100%;background:var(--gold);transition:width 1s ease;}
+
+/* ── SPEED BONUS POPUP — IDEA 6 ── */
+#speed-popup{
+  position:fixed;top:60px;right:12px;z-index:8500;
+  font-family:'Cinzel',serif;font-size:16px;font-weight:900;
+  color:var(--greenb);letter-spacing:2px;
+  opacity:0;pointer-events:none;
+  transition:none;
+}
+#speed-popup.show{animation:spPop 1.4s ease forwards;}
+@keyframes spPop{0%{opacity:0;transform:translateY(0);}15%{opacity:1;}80%{opacity:1;transform:translateY(-30px);}100%{opacity:0;transform:translateY(-40px);}}
+
+/* ── COMBO POPUP — IDEA 9 ── */
+#combo-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:8400;pointer-events:none;
+  font-family:'Cinzel',serif;font-size:clamp(22px,5vw,36px);font-weight:900;
+  color:var(--goldb);letter-spacing:5px;text-align:center;
+  text-shadow:0 0 20px rgba(232,192,96,.5);
+  opacity:0;
+}
+#combo-popup.show{animation:comboPop 1.6s ease forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5);}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}30%{transform:translate(-50%,-50%) scale(1);}80%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(.8);}}
+
+/* confetti */
+.cp{position:fixed;pointer-events:none;z-index:9500;animation:cpFall var(--d,1.5s) ease-in var(--dl,0s) forwards;}
+@keyframes cpFall{from{top:-10px;opacity:1;transform:rotate(0) translateX(0);}to{top:110vh;opacity:0;transform:rotate(var(--r,360deg)) translateX(var(--x,0px));}}
+
+/* screen shake */
+#app.shake{animation:appShake .38s ease;}
+@keyframes appShake{0%,100%{transform:translateX(0);}15%{transform:translateX(-8px);}40%{transform:translateX(7px);}65%{transform:translateX(-5px);}85%{transform:translateX(3px);}}
+
+/* ── LANDSCAPE LAYOUT ── */
+@media (orientation:landscape) and (max-height:500px) {
+  #drill{
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    padding:4px 12px;
+  }
+  #drill-left{
+    display:flex;flex-direction:column;align-items:center;
+    flex:1;min-width:0;
+  }
+  #drill-right{
+    flex-shrink:0;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+  }
+  #ruler-sym{font-size:28px;}
+  #ruler-name{font-size:clamp(14px,3vw,20px);}
+  #ruler-ep{font-size:10px;}
+  #timeline-labels{font-size:8px;}
+  .dbox{
+    width:clamp(38px,9vw,52px);
+    height:clamp(48px,11vw,60px);
+    font-size:clamp(18px,4.5vw,26px);
+  }
+  .npb{height:clamp(36px,9vw,46px);font-size:clamp(16px,4vw,22px);}
+  #numpad{max-width:200px;gap:4px;}
+  #info-box{max-width:300px;}
+}
+
+/* ── very small screens ── */
+@media (max-height:620px) and (orientation:portrait){
+  #ruler-sym{font-size:28px;margin-bottom:0;}
+  #info-box{padding:4px 10px;}
+  .ifact{font-size:10px;}
+  #timeline-labels{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- FLASH OVERLAYS -->
+<div class="flash-ov" id="fl-wrong"></div>
+<div class="flash-ov" id="fl-correct"></div>
+<div class="flash-ov" id="fl-combo"></div>
+
+<!-- ERA VEIL (IDEA 1) -->
+<div id="era-veil">
+  <div id="ev-icon">⚔️</div>
+  <div id="ev-label">Новая эпоха</div>
+  <div id="ev-title">—</div>
+  <div id="ev-years">—</div>
+</div>
+
+<!-- LOCK STAMP -->
+<div id="lock-stamp"><div id="ls-inner">УСВОЕНО</div></div>
+
+<!-- SPEED BONUS POPUP (IDEA 6) -->
+<div id="speed-popup">⚡ БЫСТРО!</div>
+
+<!-- COMBO POPUP (IDEA 9) -->
+<div id="combo-popup">🔥 СЕРИЯ ×<span id="combo-num">3</span></div>
+
+<!-- ════════════════════ START SCREEN ════════════════════ -->
+<div id="start-screen">
+  <div class="ss-title">ДОПРОС</div>
+  <div class="ss-sub">Правители России · Машина памяти · ЕГЭ</div>
+  <div class="ss-div"></div>
+
+  <div class="ss-stats">
+    <div class="ss-stat"><span class="ss-stat-v" id="gl-mastered">0</span><span class="ss-stat-l">Освоено</span></div>
+    <div class="ss-stat"><span class="ss-stat-v" id="gl-total">46</span><span class="ss-stat-l">Всего</span></div>
+    <div class="ss-stat"><span class="ss-stat-v" id="gl-sessions">0</span><span class="ss-stat-l">Сессий</span></div>
+  </div>
+
+  <div class="ss-lbl">Выберите эпоху</div>
+  <div class="era-btns" id="era-btns"></div>
+</div>
+
+<!-- ════════════════════ END SCREEN ════════════════════ -->
+<div id="end-screen">
+
+  <!-- overall session progress (not in card) -->
+  <div id="sesh-progress-wrap">
+    <div id="sesh-progress-label">ПРОГРЕСС ВСЕГО КУРСА</div>
+    <div id="sesh-prog-track"><div id="sesh-prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- THE SHAREABLE REPORT CARD -->
+  <div id="report-card">
+    <div class="rc-header">
+      <div class="rc-app-label">ДОПРОС · ЕГЭ</div>
+      <div class="rc-session-num" id="rc-session-num">Сессия #1</div>
+    </div>
+
+    <div class="rc-hero">
+      <div class="rc-grade" id="rc-grade">А+</div>
+      <div class="rc-hero-right">
+        <div class="rc-session-title" id="rc-session-title">10 ПРАВИТЕЛЕЙ</div>
+        <div class="rc-date" id="rc-date">—</div>
+        <div class="rc-meta-pills" id="rc-pills"></div>
+      </div>
+    </div>
+
+    <div class="rc-numbers">
+      <div class="rc-num-cell">
+        <span class="rc-num-v green" id="rc-locked">0</span>
+        <span class="rc-num-l">Усвоено</span>
+      </div>
+      <div class="rc-num-cell">
+        <span class="rc-num-v" id="rc-accuracy">0%</span>
+        <span class="rc-num-l">Точность</span>
+      </div>
+      <div class="rc-num-cell">
+        <span class="rc-num-v" id="rc-time">0м</span>
+        <span class="rc-num-l">Время</span>
+      </div>
+      <div class="rc-num-cell">
+        <span class="rc-num-v" id="rc-errors">0</span>
+        <span class="rc-num-l">Ошибок</span>
+      </div>
+    </div>
+
+    <div class="rc-section">ПРАВИТЕЛИ ЭТОЙ СЕССИИ</div>
+    <div class="rc-rulers" id="rc-rulers"></div>
+
+    <div class="rc-msg" id="rc-msg">—</div>
+
+    <div class="rc-footer">
+      <div class="rc-footer-brand">ЛЕТОПИСЬ · ПРАВИТЕЛИ РУСИ</div>
+      <div class="rc-footer-hint" id="rc-global">0/46 освоено</div>
+    </div>
+  </div>
+
+  <div class="es-screenshot-hint">📸 Скриншот карточки → учителю</div>
+  <button class="es-btn" onclick="continueAfterEnd()" id="es-next-btn">Следующая сессия →</button>
+  <button class="es-btn-sec" onclick="redrillWeak()">↺ Повторить слабые</button>
+  <button class="es-btn-sec" onclick="showStart()">← Выбрать эпоху</button>
+</div>
+
+<!-- ════════════════════ MAIN APP ════════════════════ -->
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div id="tb-queue-label">—</div>
+    <div id="tb-dots"></div>
+    <div id="tb-score"><span class="c" id="sc-c">✓0</span> <span class="w" id="sc-w">✗0</span></div>
+  </div>
+
+  <!-- ERA BAR -->
+  <div id="erabar">
+    <div id="era-name">—</div>
+    <div id="combo-display">⚡ <span id="combo-count">0</span> серия</div>
+  </div>
+
+  <!-- DRILL -->
+  <div id="drill">
+
+    <!-- LEFT COLUMN (portrait: all; landscape: info side) -->
+    <div id="drill-left" style="display:contents;">
+
+      <!-- IDEA 2: Timeline minibar -->
+      <div id="timeline-labels">
+        <span>862</span><span>История России</span><span>2024</span>
+      </div>
+      <div id="timeline-bar">
+        <div id="timeline-fill" style="width:0%"></div>
+        <div id="timeline-dot" style="left:0%"></div>
+      </div>
+
+      <!-- RULER INFO -->
+      <div id="ruler-sym">👑</div>
+      <div id="ruler-name">—</div>
+      <div id="ruler-ep">—</div>
+
+      <!-- IDEA 3: Wrong history badge -->
+      <div id="wrong-badge"><span id="wb-text">⚠ Ошибался здесь 0 раз</span></div>
+
+      <!-- INFO BOX -->
+      <div id="info-box">
+        <span id="info-years">—</span>
+        <div id="info-facts"></div>
+      </div>
+
+      <!-- CONSEC DOTS -->
+      <div id="consec">
+        <div class="cdot" id="cd0"></div>
+        <div class="cdot" id="cd1"></div>
+        <div class="cdot" id="cd2"></div>
+      </div>
+
+      <!-- IDEA 4: Neighbor hint -->
+      <div id="neighbor-hint" id="neighbor-hint">—</div>
+
+    </div><!-- /drill-left -->
+
+    <!-- RIGHT COLUMN (portrait: also all; landscape: numpad side) -->
+    <div id="drill-right" style="display:contents;">
+
+      <!-- YEAR INPUT ZONE -->
+      <div id="year-zone">
+        <div class="ygroup">
+          <div class="ygroup-lbl">Начало</div>
+          <div class="drow" id="dr-s"></div>
+        </div>
+        <div class="ysep" id="ysep">—</div>
+        <div class="ygroup">
+          <div class="ygroup-lbl">Конец</div>
+          <div class="drow" id="dr-e"></div>
+        </div>
+      </div>
+
+      <!-- PHASE HINT -->
+      <div id="phase-hint">↑ год начала правления</div>
+
+      <!-- ERROR HINT -->
+      <div id="err-hint"></div>
+
+      <!-- IDEA 5: Peek lives -->
+      <div id="peek-lives">
+        <span id="peek-lbl">ПОДГЛЯДЕТЬ:</span>
+        <div class="peek-pip" id="pk0"></div>
+        <div class="peek-pip" id="pk1"></div>
+        <div class="peek-pip" id="pk2"></div>
+      </div>
+
+      <!-- IDEA 6: Speed bar -->
+      <div id="speed-bar"><div id="speed-fill"></div></div>
+
+      <!-- NUMPAD -->
+      <div id="numpad">
+        <button class="npb" onclick="ni('7')">7</button>
+        <button class="npb" onclick="ni('8')">8</button>
+        <button class="npb" onclick="ni('9')">9</button>
+        <button class="npb" onclick="ni('4')">4</button>
+        <button class="npb" onclick="ni('5')">5</button>
+        <button class="npb" onclick="ni('6')">6</button>
+        <button class="npb" onclick="ni('1')">1</button>
+        <button class="npb" onclick="ni('2')">2</button>
+        <button class="npb" onclick="ni('3')">3</button>
+        <button class="npb del" onclick="nd()">⌫</button>
+        <button class="npb" onclick="ni('0')">0</button>
+        <button class="npb" style="visibility:hidden"></button>
+      </div>
+
+    </div><!-- /drill-right -->
+  </div><!-- /drill -->
+</div><!-- /app -->
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════
+//   DATA
+// ═══════════════════════════════════════════════
+const ERAS={
+  ancient:{name:'Киевская Русь',     icon:'⚔️', years:'862–1132'},
+  moscow: {name:'Московское кн-во',  icon:'🏰', years:'1276–1533'},
+  tsars:  {name:'Русское царство',   icon:'👑', years:'1547–1725'},
+  empire: {name:'Российская империя',icon:'🦅', years:'1721–1917'},
+  soviet: {name:'СССР',              icon:'☭',  years:'1917–1991'},
+  modern: {name:'Россия',            icon:'🇷🇺', years:'1991–н.д.'},
+};
+
+const R=[
+  {id:1, era:'ancient',sym:'🦅',name:'Рюрик',            ep:'Основатель династии Рюриковичей',  s:862, e:879,
+   facts:['17 лет (862–879)','Призван новгородцами — рождение Руси','Умер, опекуном стал Олег']},
+  {id:2, era:'ancient',sym:'⚔️',name:'Олег Вещий',        ep:'Прибил щит к вратам Царьграда',    s:879, e:912,
+   facts:['33 года (879–912)','В 907 г. заключил выгодный договор с Византией','Захватил Киев, сделал его столицей']},
+  {id:3, era:'ancient',sym:'🗡️',name:'Игорь Рюрикович',   ep:'Убит древлянами за жадность',      s:912, e:945,
+   facts:['33 года (912–945)','В 945 г. убит при повторном сборе дан','Отец Святослава, муж Ольги']},
+  {id:4, era:'ancient',sym:'🕊️',name:'Ольга',              ep:'Регент, первая христианка Руси',   s:945, e:964,
+   facts:['19 лет (945–964)','Отомстила древлянам, крестилась ~957 г.','Первая правительница-женщина на Руси']},
+  {id:5, era:'ancient',sym:'⚡',name:'Святослав I',         ep:'«Иду на вы» — вечный воитель',    s:964, e:972,
+   facts:['8 лет (964–972)','Разгромил Хазарский каганат','Убит печенегами у Днепра в 972 г.']},
+  {id:6, era:'ancient',sym:'✝️',name:'Владимир I Святой',  ep:'Крещение Руси — 988 год',          s:980, e:1015,
+   facts:['35 лет (980–1015)','988 — Крещение Руси, важнейшая дата ЕГЭ','До крещения был язычником']},
+  {id:7, era:'ancient',sym:'📜',name:'Ярослав Мудрый',     ep:'«Русская Правда», расцвет Киева',  s:1019,e:1054,
+   facts:['35 лет (1019–1054)','Создал первый свод законов Руси','При нём Киев — один из крупнейших городов Европы']},
+  {id:8, era:'ancient',sym:'👑',name:'Владимир Мономах',   ep:'Последний объединитель Киевской Руси',s:1113,e:1125,
+   facts:['12 лет (1113–1125)','Написал «Поучение» — наставление детям','Призван народом после восстания 1113 г.']},
+  {id:9, era:'ancient',sym:'⚜️',name:'Мстислав Великий',  ep:'Смерть = распад Руси на уделы',   s:1125,e:1132,
+   facts:['7 лет (1125–1132)','После смерти 1132 г. Русь распалась','Последний правитель единой Руси']},
+  {id:10,era:'moscow', sym:'🏰',name:'Даниил Александрович',ep:'Первый московский князь',         s:1276,e:1303,
+   facts:['27 лет (1276–1303)','Сын Александра Невского — получил Москву','Утроил территорию княжества']},
+  {id:11,era:'moscow', sym:'💰',name:'Иван I Калита',       ep:'«Калита» — денежная сума',        s:1325,e:1340,
+   facts:['15 лет (1325–1340)','Собирал дань для Орды, часть оставлял себе','Перенёс митрополию в Москву']},
+  {id:12,era:'moscow', sym:'⚔️',name:'Дмитрий Донской',    ep:'Куликово поле — 8 сент. 1380',    s:1359,e:1389,
+   facts:['30 лет (1359–1389)','1380 — первая крупная победа над Ордой','«Донской» — прозвище с битвы на Дону']},
+  {id:13,era:'moscow', sym:'🛡️',name:'Василий I',            ep:'Сын Дмитрия Донского',            s:1389,e:1425,
+   facts:['36 лет (1389–1425)','Присоединил Нижний Новгород и Муром','В 1408 г. Тамерлан подошёл к Москве, но ушёл']},
+  {id:14,era:'moscow', sym:'🌑',name:'Василий II Тёмный',   ep:'Ослеплён врагами в 1446 г.',      s:1425,e:1462,
+   facts:['37 лет (1425–1462)','«Тёмный» = ослеплён двоюродным братом','Феодальная война внутри московского дома']},
+  {id:15,era:'moscow', sym:'🌟',name:'Иван III Великий',    ep:'1480 — конец ига. «Государь Всея Руси»',s:1462,e:1505,
+   facts:['43 года (1462–1505)','1480 — стояние на Угре = конец монгольского ига','Присоединил Новгород (1478), Тверь (1485)']},
+  {id:16,era:'moscow', sym:'🔑',name:'Василий III',          ep:'Завершил объединение русских земель',s:1505,e:1533,
+   facts:['28 лет (1505–1533)','Вернул Смоленск в 1514 г.','Отец Ивана IV, оставил 3-летнего наследника']},
+  {id:17,era:'tsars',  sym:'🔥',name:'Иван IV Грозный',     ep:'Первый царь России с 1547 г.',    s:1547,e:1584,
+   facts:['37 лет (1547–1584)','1547 — первое венчание на царство в России','Ввёл опричнину (1565), завоевал Казань (1552)']},
+  {id:18,era:'tsars',  sym:'🔔',name:'Фёдор I Иоаннович',   ep:'Последний Рюрикович на троне',    s:1584,e:1598,
+   facts:['14 лет (1584–1598)','Слабый — реально правил Борис Годунов','Смерть без наследника = конец Рюриковичей']},
+  {id:19,era:'tsars',  sym:'⏳',name:'Борис Годунов',        ep:'Избранный царь, голод 1601–1603', s:1598,e:1605,
+   facts:['7 лет (1598–1605)','Первый не из Рюриковичей — избран Земским собором','Страшный голод, затем Смута и его смерть']},
+  {id:20,era:'tsars',  sym:'💀',name:'Смутное время',        ep:'Самозванцы, поляки, хаос',        s:1605,e:1613,
+   facts:['8 лет (1605–1613)','Лжедмитрии I и II, польская интервенция','1612 — Минин и Пожарский освободили Москву']},
+  {id:21,era:'tsars',  sym:'🌹',name:'Михаил Романов',       ep:'Первый Романов — избран 1613',    s:1613,e:1645,
+   facts:['32 года (1613–1645)','1613 — Земский собор избрал 16-летнего Михаила','Начало династии Романовых (304 года)']},
+  {id:22,era:'tsars',  sym:'📖',name:'Алексей Михайлович',   ep:'«Тишайший» — отец Петра I',       s:1645,e:1676,
+   facts:['31 год (1645–1676)','Соборное Уложение 1649 — новый свод законов','Церковный раскол (1654), бунт Разина (1670)']},
+  {id:23,era:'tsars',  sym:'🌙',name:'Фёдор III Алексеевич', ep:'Отменил местничество, 6 лет',     s:1676,e:1682,
+   facts:['6 лет (1676–1682)','Упразднил местничество — назначения по знатности','Умер в 20 лет без наследника']},
+  {id:24,era:'tsars',  sym:'🚢',name:'Пётр I Великий',       ep:'Петербург 1703 · Полтава 1709 · Империя 1721',s:1682,e:1725,
+   facts:['43 года (1682–1725)','1703 — Петербург, 1709 — Полтава, 1721 — Империя','«Окно в Европу» — главный реформатор']},
+  {id:25,era:'empire', sym:'👸',name:'Екатерина I',           ep:'Первая женщина-правитель России',  s:1725,e:1727,
+   facts:['2 года (1725–1727)','Крестьянка Марта Скавронская — жена Петра I','Реально правил Меншиков']},
+  {id:26,era:'empire', sym:'🧒',name:'Пётр II',               ep:'Умер от оспы в 14 лет',           s:1727,e:1730,
+   facts:['3 года (1727–1730)','Стал императором в 11 лет — внук Петра I','Умер накануне свадьбы, не успел ничего']},
+  {id:27,era:'empire', sym:'🦢',name:'Анна Иоанновна',        ep:'Бироновщина — немецкое засилье',  s:1730,e:1740,
+   facts:['10 лет ровно (1730–1740)','Племянница Петра I, фаворит Бирон','Тайная канцелярия — инструмент террора']},
+  {id:28,era:'empire', sym:'👶',name:'Иван VI',               ep:'Император в 2 месяца — 1 год',   s:1740,e:1741,
+   facts:['1 год (1740–1741)','Свергнут Елизаветой, прожил жизнь в камере','Убит при попытке освобождения в 1764']},
+  {id:29,era:'empire', sym:'🌺',name:'Елизавета Петровна',    ep:'Дочь Петра I, МГУ 1755',          s:1741,e:1762,
+   facts:['21 год (1741–1762)','Основала Московский университет (1755)','Победила Пруссию в Семилетней войне']},
+  {id:30,era:'empire', sym:'🎺',name:'Пётр III',              ep:'186 дней — свергнут женой',       s:1762,e:1762,
+   facts:['Полгода — оба года: 1762','Обожал Пруссию, вернул Фридриху все победы','Свергнут Екатериной, вскоре убит']},
+  {id:31,era:'empire', sym:'⚖️',name:'Екатерина II Великая',  ep:'Пугачёв 1773 · Крым 1783',       s:1762,e:1796,
+   facts:['34 года (1762–1796)','Присоединила Крым (1783), разделы Польши','Пугачёвский бунт 1773–1775']},
+  {id:32,era:'empire', sym:'🏇',name:'Павел I',               ep:'Убит в Михайловском замке',       s:1796,e:1801,
+   facts:['5 лет (1796–1801)','Задушен гвардейцами 12 марта 1801 года','Отменил многие дворянские привилегии']},
+  {id:33,era:'empire', sym:'🌍',name:'Александр I',           ep:'Отечественная война 1812 года',   s:1801,e:1825,
+   facts:['24 года (1801–1825)','1812 — Бородино, Москва, изгнание Наполеона','Умер в Таганроге, легенда: ушёл в Сибирь']},
+  {id:34,era:'empire', sym:'🏛️',name:'Николай I',             ep:'«Жандарм Европы», декабристы',   s:1825,e:1855,
+   facts:['30 лет (1825–1855)','День первый — расстрел декабристов','Умер в разгар поражений в Крымской войне']},
+  {id:35,era:'empire', sym:'🔓',name:'Александр II',          ep:'Отмена крепостного права — 1861', s:1855,e:1881,
+   facts:['26 лет (1855–1881)','19 февраля 1861 — главная реформа ЕГЭ!','Убит бомбой народовольцев 1 марта 1881']},
+  {id:36,era:'empire', sym:'🐻',name:'Александр III',         ep:'«Миротворец» — ни одной войны',   s:1881,e:1894,
+   facts:['13 лет (1881–1894)','При нём Россия не воевала ни разу','Строил Транссибирскую магистраль']},
+  {id:37,era:'empire', sym:'👑',name:'Николай II',            ep:'Революции 1905 и 1917, конец империи',s:1894,e:1917,
+   facts:['23 года (1894–1917)','Революция 1905, Первая мировая война (1914)','Отрёкся 2 марта 1917, расстрелян в 1918']},
+  {id:38,era:'soviet', sym:'☭', name:'Ленин',                 ep:'Октябрь 1917 · основатель СССР',  s:1917,e:1924,
+   facts:['7 лет (1917–1924)','25 октября 1917 — Октябрьская революция','Основал СССР в 1922 г., умер 21 января 1924']},
+  {id:39,era:'soviet', sym:'🔴',name:'Сталин',                ep:'Индустриализация · ВОВ · репрессии',s:1924,e:1953,
+   facts:['29 лет (1924–1953)','ВОВ 1941–1945 — победа над Германией','Репрессии 1936–1938, ГУЛАГ']},
+  {id:40,era:'soviet', sym:'🌽',name:'Хрущёв',               ep:'«Оттепель» · Гагарин 1961',       s:1953,e:1964,
+   facts:['11 лет (1953–1964)','1961 — Гагарин в космосе','Свергнут соратниками в октябре 1964']},
+  {id:41,era:'soviet', sym:'🏅',name:'Брежнев',              ep:'«Застой» · Афганистан 1979',      s:1964,e:1982,
+   facts:['18 лет (1964–1982)','Афганистан — 1979 год','«Застой» — стабильность без развития']},
+  {id:42,era:'soviet', sym:'🔎',name:'Андропов',             ep:'15 месяцев · бывший шеф КГБ',     s:1982,e:1984,
+   facts:['15 месяцев (1982–1984)','Руководил КГБ до прихода к власти','Начал реформы, умер тяжелобольным']},
+  {id:43,era:'soviet', sym:'🕰️',name:'Черненко',             ep:'13 месяцев · «гонка на катафалках»',s:1984,e:1985,
+   facts:['13 месяцев (1984–1985)','Тяжелобольной с первого дня','Третий лидер за три года']},
+  {id:44,era:'soviet', sym:'☮️',name:'Горбачёв',             ep:'Перестройка · распад СССР 1991',  s:1985,e:1991,
+   facts:['6 лет (1985–1991)','Перестройка, гласность, ускорение','ГКЧП август 1991 → распад СССР 25 дек. 1991']},
+  {id:45,era:'modern', sym:'🇷🇺',name:'Ельцин',              ep:'Первый президент России',          s:1991,e:1999,
+   facts:['8 лет (1991–1999)','«Шоковая терапия», Чечня, дефолт 1998','31 декабря 1999: «Я устал. Я ухожу.»']},
+  {id:46,era:'modern', sym:'🦅',name:'Путин / Медведев / Путин',ep:'2000-е — наши дни',            s:2000,e:2024,
+   facts:['С 2000 года','Медведев — президент 2008–2012','2014 — присоединение Крыма']},
+];
+
+// ═══════════════════════════════════════════════
+//   AUDIO
+// ═══════════════════════════════════════════════
+let actx=null;
+function au(){
+  if(!actx)try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch{}
+  if(actx?.state==='suspended')actx.resume();return actx;
+}
+function tone(f,t,d,v,dl=0){
+  const c=au();if(!c)return;
+  const tm=c.currentTime+dl;
+  const o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);
+  o.type=t;o.frequency.value=f;
+  g.gain.setValueAtTime(v,tm);
+  g.gain.exponentialRampToValueAtTime(.001,tm+d);
+  o.start(tm);o.stop(tm+d+.01);
+}
+const DF=[440,523,659,784,880,1046,1174,1396];
+function sndDig(pos){tone(DF[pos%8],'sine',.11,.09);}
+function sndWrong(){tone(110,'sawtooth',.16,.07);tone(90,'square',.2,.05,.1);}
+function sndPhase(){[523,659].forEach((f,i)=>tone(f,'sine',.16,.09,i*.1));}
+function sndLock(){[784,880,1046,1318,1568].forEach((f,i)=>tone(f,'sine',.22,.1,i*.1));}
+function sndCombo(){[659,784,880,1046].forEach((f,i)=>tone(f,'triangle',.2,.12,i*.08));setTimeout(()=>tone(1318,'sine',.3,.1),.4*1000);}
+
+// ═══════════════════════════════════════════════
+//   PERSISTENCE
+// ═══════════════════════════════════════════════
+const LS={
+  g:(k,d)=>{try{const v=localStorage.getItem('dpr3-'+k);return v!=null?JSON.parse(v):d;}catch{return d;}},
+  s:(k,v)=>{try{localStorage.setItem('dpr3-'+k,JSON.stringify(v));}catch{}}
+};
+
+// globalWrong: id → total wrong count across all sessions
+let globalWrong=new Map(Object.entries(LS.g('gw',{})).map(([k,v])=>[parseInt(k),v]));
+let globalLocked=new Set(LS.g('gl',[]));
+let sessions=LS.g('sessions',0);
+
+function saveGlobal(){
+  const gw={};globalWrong.forEach((v,k)=>gw[k]=v);
+  LS.s('gw',gw);LS.s('gl',[...globalLocked]);LS.s('sessions',sessions);
+}
+
+// ═══════════════════════════════════════════════
+//   SESSION STATE
+// ═══════════════════════════════════════════════
+const SESSION_SIZE = 10;
+
+let queue=[], locked=new Set(), scores={};
+let cur=null, phase='start', digits=[], totalWrong=0;
+let sessionC=0, sessionW=0;
+let activeEra=null;
+let sessionWrongIds=new Set();
+
+// Per-session ruler log: ordered list of rulers in this session
+// Each entry: {ruler, wrongs:0, timeStart:0, timeMs:0, locked:false}
+let sessionLog=[];
+let sessionLogMap={}; // id → entry
+
+// IDEA 6: speed
+let rulerStartTime=0, speedInterval=null, SPEED_LIMIT=9000;
+
+// IDEA 5: peek lives
+let peekLives=3;
+let holdTimer=null;
+
+// IDEA 9: combo
+let comboCount=0;
+
+// session timer
+let sessionStartTime=0;
+
+// ═══════════════════════════════════════════════
+//   START SCREEN
+// ═══════════════════════════════════════════════
+function buildStart(){
+  document.getElementById('gl-mastered').textContent=globalLocked.size;
+  document.getElementById('gl-total').textContent=R.length;
+  document.getElementById('gl-sessions').textContent=sessions;
+
+  const c=document.getElementById('era-btns');
+  c.innerHTML='';
+
+  // ALL button
+  const allLocked=R.filter(r=>globalLocked.has(r.id)).length;
+  const ab=mkEraBtn('ВСЕ ЭПОХИ','all',`${allLocked}/${R.length}`,allLocked/R.length,'all');
+  ab.classList.add('all');
+  c.appendChild(ab);
+
+  Object.entries(ERAS).forEach(([key,era])=>{
+    const rulers=R.filter(r=>r.era===key);
+    const lk=rulers.filter(r=>globalLocked.has(r.id)).length;
+    c.appendChild(mkEraBtn(era.name,era.years,`${lk}/${rulers.length}`,lk/rulers.length,key));
+  });
+}
+
+function mkEraBtn(name,sub,count,pct,key){
+  const b=document.createElement('button');
+  b.className='era-btn';
+  b.innerHTML=`<div><div>${name}</div><div class="era-btn-sub">${sub}</div><div class="era-progress"><div class="era-progress-fill" style="width:${pct*100}%"></div></div></div><div class="era-count">${count}</div>`;
+  b.onclick=()=>startSession(key);
+  return b;
+}
+
+function showStart(){
+  document.getElementById('end-screen').classList.remove('show');
+  buildStart();
+  document.getElementById('start-screen').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════
+//   SESSION START
+// ═══════════════════════════════════════════════
+async function startSession(era){
+  activeEra=era;
+  const pool=era==='all'?[...R]:R.filter(r=>r.era===era);
+
+  // Pick SESSION_SIZE rulers: prioritise never-locked (weak first), then round-robin
+  const neverLocked=pool.filter(r=>!globalLocked.has(r.id));
+  const alreadyLocked=pool.filter(r=>globalLocked.has(r.id));
+  // Sort weak by global wrong count descending
+  neverLocked.sort((a,b)=>(globalWrong.get(b.id)||0)-(globalWrong.get(a.id)||0));
+  // Shuffle locked ones for variety
+  alreadyLocked.sort(()=>Math.random()-.5);
+  const combined=[...neverLocked,...alreadyLocked];
+  const chosen=combined.slice(0, Math.min(SESSION_SIZE, combined.length));
+  // Shuffle chosen order
+  chosen.sort(()=>Math.random()-.5);
+
+  queue=[...chosen];
+  locked=new Set();scores={};
+  sessionC=0;sessionW=0;sessionWrongIds=new Set();
+  sessionLog=[];sessionLogMap={};
+  peekLives=3;comboCount=0;
+  sessionStartTime=Date.now();
+
+  // Init scores and log for each chosen ruler
+  chosen.forEach(r=>{
+    scores[r.id]={consec:0,wrong:0};
+    const entry={ruler:r,wrongs:0,timeStart:0,timeMs:0,locked:false};
+    sessionLog.push(entry);
+    sessionLogMap[r.id]=entry;
+  });
+
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('end-screen').classList.remove('show');
+
+  // Update topbar queue dots to show SESSION_SIZE slots
+  updateQueueDots();
+  updateComboUI();
+  updatePeekUI();
+
+  // Era transition veil
+  const firstEra=chosen[0]?.era;
+  if(firstEra && era!=='all'){
+    await showEraVeil(firstEra);
+  }
+
+  nextRuler();
+}
+
+// IDEA 1: Era veil
+function showEraVeil(era){
+  return new Promise(res=>{
+    const ev=document.getElementById('era-veil');
+    const eraData=ERAS[era];
+    document.getElementById('ev-icon').textContent=eraData.icon;
+    document.getElementById('ev-title').textContent=eraData.name;
+    document.getElementById('ev-years').textContent=eraData.years;
+    ev.classList.add('show');
+    setTimeout(()=>{ev.classList.remove('show');setTimeout(res,400);},1800);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//   NEXT RULER
+// ═══════════════════════════════════════════════
+async function nextRuler(){
+  if(queue.length===0){endSession();return;}
+
+  const prevEra=cur?.era;
+  cur=queue[0];
+  phase='start';digits=[];totalWrong=0;
+
+  // IDEA 1: Era transition for 'all' mode
+  if(activeEra==='all' && prevEra && prevEra!==cur.era){
+    await showEraVeil(cur.era);
+  }
+
+  const sc=scores[cur.id];
+  const showInfo=sc.consec<2; // show info on first 2 passes
+
+  render(showInfo);
+  buildRows();
+  setPhase('start');
+  updateConsec();
+  updateQueueDots();
+  updateSessionStats();
+  updateEraLabel();
+  updateTimeline();
+
+  // IDEA 4: Neighbor hint — reset
+  document.getElementById('neighbor-hint').classList.remove('show');
+
+  // IDEA 3: Wrong badge
+  const gw=globalWrong.get(cur.id)||0;
+  const badge=document.getElementById('wrong-badge');
+  if(gw>0){
+    document.getElementById('wb-text').textContent=`⚠ Ошибался здесь ${gw} ${gw===1?'раз':'раз'}`;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+
+  // track start time for this ruler in session log
+  const logEntry=sessionLogMap[cur.id];
+  if(logEntry && logEntry.timeStart===0) logEntry.timeStart=Date.now();
+
+  // IDEA 6: start speed timer
+  startSpeedTimer();
+}
+
+// ═══════════════════════════════════════════════
+//   RENDER RULER
+// ═══════════════════════════════════════════════
+function render(showInfo){
+  document.getElementById('ruler-sym').textContent=cur.sym;
+  document.getElementById('ruler-name').textContent=cur.name;
+  document.getElementById('ruler-ep').textContent=cur.ep;
+
+  const ib=document.getElementById('info-box');
+  if(showInfo){
+    const dur=cur.e-cur.s;
+    document.getElementById('info-years').textContent=`${cur.s} — ${cur.e}  ·  ${dur>0?dur+' лет':'< 1 года'}`;
+    const ff=document.getElementById('info-facts');
+    ff.innerHTML='';
+    (cur.facts||[]).forEach(f=>{const d=document.createElement('div');d.className='ifact';d.textContent=f;ff.appendChild(d);});
+    ib.classList.add('vis');
+  } else {
+    ib.classList.remove('vis');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//   IDEA 2: TIMELINE MINIBAR
+// ═══════════════════════════════════════════════
+const HIST_START=862, HIST_END=2024;
+function updateTimeline(){
+  const span=HIST_END-HIST_START;
+  const midYear=(cur.s+cur.e)/2;
+  const pct=Math.max(0,Math.min(100,(midYear-HIST_START)/span*100));
+  const startPct=Math.max(0,Math.min(100,(cur.s-HIST_START)/span*100));
+  const endPct=Math.max(0,Math.min(100,(cur.e-HIST_START)/span*100));
+  document.getElementById('timeline-fill').style.width=endPct+'%';
+  document.getElementById('timeline-dot').style.left=pct+'%';
+}
+
+// ═══════════════════════════════════════════════
+//   DIGIT ROWS
+// ═══════════════════════════════════════════════
+function buildRows(){
+  buildRow('dr-s', String(cur.s).length);
+  buildRow('dr-e', String(cur.e).length);
+  document.getElementById('ysep').classList.remove('lit');
+}
+
+function buildRow(id,n){
+  const el=document.getElementById(id);el.innerHTML='';
+  for(let i=0;i<n;i++){
+    const b=document.createElement('div');
+    b.className='dbox'+(i===0&&id==='dr-s'?' cur':'');
+    b.id=id+'-'+i;
+    // IDEA 5: long press
+    b.addEventListener('pointerdown',()=>startHold(b,i));
+    b.addEventListener('pointerup',cancelHold);
+    b.addEventListener('pointercancel',cancelHold);
+    el.appendChild(b);
+  }
+}
+
+function setPhase(p){
+  phase=p;digits=[];totalWrong=0;
+  const hint=p==='start'?'↑ вводите год начала правления':'год окончания правления →';
+  document.getElementById('phase-hint').textContent=hint;
+  if(p==='start') setCur('dr-s',0);
+  else setCur('dr-e',0);
+  clearErr();
+  // IDEA 4: reset neighbor hint on phase change
+  document.getElementById('neighbor-hint').classList.remove('show');
+}
+
+function setCur(row,pos){
+  document.querySelectorAll('.dbox').forEach(b=>b.classList.remove('cur'));
+  const b=document.getElementById(row+'-'+pos);
+  if(b) b.classList.add('cur');
+}
+
+// ═══════════════════════════════════════════════
+//   IDEA 5: PEEK / LONG PRESS
+// ═══════════════════════════════════════════════
+function startHold(box,pos){
+  if(peekLives<=0)return;
+  const rowId=phase==='start'?'dr-s':'dr-e';
+  const target=phase==='start'?String(cur.s):String(cur.e);
+  if(pos!==digits.length)return; // only current cursor box
+  box.classList.add('hold');
+  holdTimer=setTimeout(()=>{
+    usePeek(target,pos,rowId);
+  },1400);
+}
+
+function cancelHold(){
+  clearTimeout(holdTimer);holdTimer=null;
+  document.querySelectorAll('.dbox.hold').forEach(b=>b.classList.remove('hold'));
+}
+
+function usePeek(target,pos,rowId){
+  document.querySelectorAll('.dbox.hold').forEach(b=>b.classList.remove('hold'));
+  if(peekLives<=0)return;
+  peekLives--;
+  updatePeekUI();
+  // fill one digit
+  const digit=target[pos];
+  digits.push(digit);
+  const b=document.getElementById(rowId+'-'+pos);
+  if(b){b.textContent=digit;b.className='dbox filled';b.style.color='#6080c8';}
+  const next=document.getElementById(rowId+'-'+(pos+1));
+  if(next) next.className='dbox cur';
+  const tLen=target.length;
+  if(digits.length===tLen) setTimeout(()=>onYearDone(),300);
+  else au();
+}
+
+function updatePeekUI(){
+  [0,1,2].forEach(i=>{
+    const p=document.getElementById('pk'+i);
+    p.className='peek-pip'+(i>=peekLives?' used':'');
+  });
+}
+
+// ═══════════════════════════════════════════════
+//   IDEA 6: SPEED TIMER
+// ═══════════════════════════════════════════════
+function startSpeedTimer(){
+  rulerStartTime=Date.now();
+  clearInterval(speedInterval);
+  const fill=document.getElementById('speed-fill');
+  fill.style.width='100%';
+  fill.style.background='var(--green)';
+  speedInterval=setInterval(()=>{
+    const elapsed=Date.now()-rulerStartTime;
+    const pct=Math.max(0,100-(elapsed/SPEED_LIMIT)*100);
+    fill.style.width=pct+'%';
+    if(pct<30) fill.style.background='var(--red)';
+    else if(pct<60) fill.style.background='var(--gold)';
+    else fill.style.background='var(--green)';
+    if(pct<=0) clearInterval(speedInterval);
+  },100);
+}
+
+function stopSpeedTimer(){
+  clearInterval(speedInterval);
+  const elapsed=Date.now()-rulerStartTime;
+  return elapsed; // ms
+}
+
+function showSpeedBonus(){
+  const p=document.getElementById('speed-popup');
+  p.classList.remove('show');
+  void p.offsetWidth;
+  p.classList.add('show');
+  setTimeout(()=>p.classList.remove('show'),1500);
+}
+
+// ═══════════════════════════════════════════════
+//   INPUT HANDLING
+// ═══════════════════════════════════════════════
+function ni(d){
+  au();
+  const target=phase==='start'?String(cur.s):String(cur.e);
+  const pos=digits.length;
+  if(pos>=target.length)return;
+  const rowId=phase==='start'?'dr-s':'dr-e';
+
+  if(d===target[pos]){
+    digits.push(d);
+    stampBox(rowId,pos,d,target.length);
+    sndDig(pos);
+    clearErr();
+    if(digits.length===target.length) setTimeout(onYearDone,300);
+  } else {
+    shakeBox(rowId,pos);
+    sndWrong();
+    flashOv('fl-wrong');
+    totalWrong++;
+    scores[cur.id].wrong++;
+    sessionW++;
+    sessionWrongIds.add(cur.id);
+    const gw=(globalWrong.get(cur.id)||0)+1;
+    globalWrong.set(cur.id,gw);
+    // update session log entry
+    if(sessionLogMap[cur.id]) sessionLogMap[cur.id].wrongs++;
+    saveGlobal();
+    // Update badge live
+    document.getElementById('wb-text').textContent=`⚠ Ошибался здесь ${gw} раз`;
+    document.getElementById('wrong-badge').classList.add('show');
+    showErr(target,pos,totalWrong);
+    updateSessionStats();
+    // screen shake every 3 mistakes
+    if(totalWrong%3===0) appShake();
+  }
+}
+
+function nd(){
+  if(digits.length===0)return;
+  digits.pop();
+  const rowId=phase==='start'?'dr-s':'dr-e';
+  const pos=digits.length;
+  const b=document.getElementById(rowId+'-'+pos);
+  if(b){b.textContent='';b.className='dbox cur';}
+}
+
+// ═══════════════════════════════════════════════
+//   YEAR COMPLETE
+// ═══════════════════════════════════════════════
+function onYearDone(){
+  if(phase==='start'){
+    sndPhase();
+    document.getElementById('ysep').classList.add('lit');
+    flashOv('fl-correct');
+    setPhase('end');
+  } else {
+    onBothDone();
+  }
+}
+
+function onBothDone(){
+  const elapsed=stopSpeedTimer();
+  sessionC++;
+  const sc=scores[cur.id];
+  sc.consec++;
+  flashOv('fl-correct');
+  updateConsec();
+  updateSessionStats();
+
+  // IDEA 6: speed bonus
+  if(elapsed<SPEED_LIMIT && sc.wrong===0 && totalWrong===0){
+    showSpeedBonus();
+  }
+
+  // IDEA 9: combo (this ruler done with 0 mistakes ever this session)
+  if(scores[cur.id].wrong===0){
+    comboCount++;
+    if(comboCount>=3){
+      triggerCombo();
+    }
+  } else {
+    comboCount=0;
+  }
+  updateComboUI();
+
+  if(sc.consec>=3){
+    // LOCKED!
+    locked.add(cur.id);
+    globalLocked.add(cur.id);
+    // mark in session log
+    if(sessionLogMap[cur.id]){
+      sessionLogMap[cur.id].locked=true;
+      sessionLogMap[cur.id].timeMs=Date.now()-sessionLogMap[cur.id].timeStart;
+    }
+    saveGlobal();
+    queue.shift();
+    updateQueueDots();
+    sndLock();
+    showLockStamp(()=>{
+      if(locked.size>=SESSION_SIZE || queue.length===0) endSession();
+      else nextRuler();
+    });
+  } else {
+    queue.shift();
+    // wrong rulers return sooner
+    const ins=Math.min(2+scores[cur.id].wrong, queue.length);
+    queue.splice(ins,0,cur);
+    updateQueueDots();
+    setTimeout(()=>nextRuler(),400);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//   IDEA 9: COMBO
+// ═══════════════════════════════════════════════
+function triggerCombo(){
+  sndCombo();
+  flashOv('fl-combo');
+  const cp=document.getElementById('combo-popup');
+  document.getElementById('combo-num').textContent=comboCount;
+  cp.classList.remove('show');void cp.offsetWidth;cp.classList.add('show');
+  setTimeout(()=>cp.classList.remove('show'),1700);
+  const np=document.getElementById('numpad');
+  np.classList.add('combo');
+  setTimeout(()=>np.classList.remove('combo'),4000);
+  confetti(20);
+}
+
+function updateComboUI(){
+  const cd=document.getElementById('combo-display');
+  const cn=document.getElementById('combo-count');
+  cn.textContent=comboCount;
+  cd.className='combo-display'+(comboCount>=3?' active':'');
+  if(comboCount>=3) cd.id='combo-display';
+}
+
+// ═══════════════════════════════════════════════
+//   BOX ANIMATIONS
+// ═══════════════════════════════════════════════
+function stampBox(rowId,pos,digit,maxLen){
+  const b=document.getElementById(rowId+'-'+pos);if(!b)return;
+  b.textContent=digit;b.className='dbox filled ok-flash';
+  const nx=document.getElementById(rowId+'-'+(pos+1));
+  setTimeout(()=>{
+    b.className='dbox filled';
+    if(nx&&pos<maxLen-1)nx.className='dbox cur';
+  },280);
+}
+
+function shakeBox(rowId,pos){
+  const b=document.getElementById(rowId+'-'+pos);if(!b)return;
+  b.className='dbox cur err-flash';
+  setTimeout(()=>b.className='dbox cur',380);
+}
+
+// ═══════════════════════════════════════════════
+//   ERROR HINTS
+// ═══════════════════════════════════════════════
+function showErr(target,pos,count){
+  const el=document.getElementById('err-hint');
+  const blanks='_'.repeat(target.length-2);
+
+  if(count>=6){
+    el.textContent=`Год: ${target}`;el.className='show digit';
+    setTimeout(()=>autoFill(target),800);
+  } else if(count>=3){
+    // IDEA 4: Neighbor hint
+    showNeighborHint();
+    el.textContent=`Подсказка: ${target.slice(0,2)}${blanks}`;el.className='show digit';
+  } else if(count>=2){
+    el.textContent='Подумай ещё раз...';el.className='show';
+  }
+}
+
+// IDEA 4: Neighbor hint — show ruler before and after
+function showNeighborHint(){
+  const allRulers=R;
+  const idx=allRulers.findIndex(r=>r.id===cur.id);
+  const prev=allRulers[idx-1];
+  const next=allRulers[idx+1];
+  let txt='';
+  if(prev) txt+=`После: ${prev.name} (−${cur.s-prev.e}) лет`;
+  if(next) txt+=(txt?' · ':'')+`До: ${next.name} (${next.s-cur.e} лет)`;
+  if(txt){
+    const nh=document.getElementById('neighbor-hint');
+    nh.textContent='⟷ '+txt;
+    nh.classList.add('show');
+  }
+}
+
+function clearErr(){
+  const el=document.getElementById('err-hint');el.textContent='';el.className='';
+}
+
+function autoFill(target){
+  const rowId=phase==='start'?'dr-s':'dr-e';
+  while(digits.length<target.length){
+    const pos=digits.length;digits.push(target[pos]);
+    const b=document.getElementById(rowId+'-'+pos);
+    if(b){b.textContent=target[pos];b.className='dbox filled';b.style.color='var(--textd)';}
+  }
+  document.querySelectorAll('.dbox.cur').forEach(b=>b.classList.remove('cur'));
+  setTimeout(()=>{
+    if(phase==='start'){document.getElementById('ysep').classList.add('lit');setPhase('end');}
+    else onBothDone();
+  },600);
+}
+
+// ═══════════════════════════════════════════════
+//   UI UPDATES
+// ═══════════════════════════════════════════════
+function updateConsec(){
+  const sc=cur?scores[cur.id]:{consec:0};
+  [0,1,2].forEach(i=>{
+    document.getElementById('cd'+i).className='cdot'+(i<(sc?.consec||0)?' on':'');
+  });
+}
+
+function updateQueueDots(){
+  const dots=document.getElementById('tb-dots');
+  dots.innerHTML='';
+  // show all SESSION rulers from sessionLog, not the whole pool
+  sessionLog.forEach(entry=>{
+    const r=entry.ruler;
+    const d=document.createElement('div');d.className='qdot';
+    if(locked.has(r.id)) d.className='qdot done';
+    else if(cur&&r.id===cur.id) d.className='qdot cur';
+    else if(scores[r.id]?.wrong>2) d.className='qdot hard';
+    dots.appendChild(d);
+  });
+  const remaining=queue.filter(r=>!locked.has(r.id));
+  // deduplicate (queue has duplicates for retry)
+  const uniq=new Set(remaining.map(r=>r.id));
+  document.getElementById('tb-queue-label').textContent=`${uniq.size}ост·${locked.size}закр`;
+}
+
+function updateSessionStats(){
+  document.getElementById('sc-c').textContent='✓'+sessionC;
+  document.getElementById('sc-w').textContent='✗'+sessionW;
+}
+
+function updateEraLabel(){
+  const eraKey=cur?.era;
+  const label=eraKey?(ERAS[eraKey]?.name||'—'):'—';
+  document.getElementById('era-name').textContent=label.toUpperCase();
+}
+
+// ═══════════════════════════════════════════════
+//   LOCK STAMP
+// ═══════════════════════════════════════════════
+function showLockStamp(cb){
+  const st=document.getElementById('lock-stamp');
+  st.classList.add('show');
+  confetti(25);
+  setTimeout(()=>{st.classList.remove('show');cb();},1100);
+}
+
+// ═══════════════════════════════════════════════
+//   SESSION END — REPORT CARD
+// ═══════════════════════════════════════════════
+function endSession(){
+  clearInterval(speedInterval);
+  sessions++;saveGlobal();
+
+  const totalSec=Math.round((Date.now()-sessionStartTime)/1000);
+  const min=Math.floor(totalSec/60),sec=totalSec%60;
+  const timeStr=min>0?`${min}м ${sec<10?'0':''}${sec}с`:`${totalSec}с`;
+
+  // compute stats
+  const totalErrors=sessionLog.reduce((s,e)=>s+e.wrongs,0);
+  const lockedCount=sessionLog.filter(e=>e.locked).length;
+  const totalAttempts=sessionC+sessionW;
+  const accuracy=totalAttempts>0?Math.round(sessionC/totalAttempts*100):100;
+
+  // Grade
+  let grade,gradeColor;
+  if(accuracy>=97 && totalErrors===0){grade='А+';gradeColor='var(--greenb)';}
+  else if(accuracy>=90){grade='А';gradeColor='var(--greenb)';}
+  else if(accuracy>=75){grade='В';gradeColor='var(--goldb)';}
+  else if(accuracy>=60){grade='С';gradeColor='var(--gold)';}
+  else{grade='D';gradeColor='var(--redb)';}
+
+  // Session number
+  document.getElementById('rc-session-num').textContent=`Сессия #${sessions}`;
+  document.getElementById('rc-grade').textContent=grade;
+  document.getElementById('rc-grade').style['-webkit-text-fill-color']=gradeColor;
+  document.getElementById('rc-grade').style.filter=`drop-shadow(0 0 12px ${gradeColor}66)`;
+
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('rc-date').textContent=dateStr;
+
+  const eraName=activeEra==='all'?'Все эпохи':(ERAS[activeEra]?.name||'');
+  document.getElementById('rc-session-title').textContent=`${SESSION_SIZE} ПРАВИТЕЛЕЙ · ${eraName.toUpperCase()}`;
+
+  // Pills
+  const pills=document.getElementById('rc-pills');
+  pills.innerHTML='';
+  const addPill=(txt,cls='')=>{const p=document.createElement('div');p.className='rc-pill'+' '+cls;p.textContent=txt;pills.appendChild(p);};
+  if(lockedCount===sessionLog.length) addPill('✓ ВСЁ УСВОЕНО','green');
+  else addPill(`${lockedCount}/${sessionLog.length} усвоено`, lockedCount>sessionLog.length/2?'green':'');
+  if(comboCount>=5) addPill(`🔥 Серия ×${comboCount}`,'green');
+  if(totalErrors===0) addPill('Без ошибок!','green');
+  else if(totalErrors>10) addPill(`${totalErrors} ошибок`,'red');
+
+  // Numbers
+  document.getElementById('rc-locked').textContent=lockedCount;
+  document.getElementById('rc-accuracy').textContent=accuracy+'%';
+  document.getElementById('rc-time').textContent=timeStr;
+  document.getElementById('rc-errors').textContent=totalErrors;
+  if(totalErrors===0) document.getElementById('rc-errors').className='rc-num-v green';
+  else if(totalErrors>8) document.getElementById('rc-errors').className='rc-num-v red';
+  else document.getElementById('rc-errors').className='rc-num-v';
+
+  // Ruler rows
+  const rulerContainer=document.getElementById('rc-rulers');
+  rulerContainer.innerHTML='';
+  sessionLog.forEach((entry,i)=>{
+    const r=entry.ruler;
+    const row=document.createElement('div');
+    row.className='rc-row';
+    // error dot indicators: up to 5 dots, each dot = category
+    const dots=buildErrorDots(entry.wrongs);
+    const lockSpan=`<div class="rc-lock ${entry.locked?'yes':''}">${entry.locked?'✓ усвоен':'в работе'}</div>`;
+    row.innerHTML=`
+      <div class="rc-row-num">${i+1}</div>
+      <div class="rc-row-sym">${r.sym}</div>
+      <div class="rc-row-info">
+        <div class="rc-row-name">${r.name}</div>
+        <div class="rc-row-dates">${r.s} — ${r.e}</div>
+      </div>
+      <div class="rc-row-right">
+        <div class="rc-dots">${dots}</div>
+        ${lockSpan}
+      </div>`;
+    rulerContainer.appendChild(row);
+  });
+
+  // Motivation message
+  const msgs={
+    'А+':['Идеально! Эти даты в памяти навсегда.','Безупречно. Мозг всё запомнил.'],
+    'А': ['Отлично! Почти без ошибок — результат виден.','Очень сильная сессия. Ещё раз — и всё без ошибок.'],
+    'В': ['Хороший старт. Повтори слабые места ещё раз.','Прогресс есть. Ошибки — это рост.'],
+    'С': ['Не сдавайся. Повтори сегодня же — закрепится.','Первый раз трудно. Второй — уже легче.'],
+    'D': ['Продолжай. Даже маленький шаг — это шаг вперёд.','Повтори эту же сессию — результат удивит.'],
+  };
+  const pool=msgs[grade]||msgs['С'];
+  document.getElementById('rc-msg').textContent=pool[Math.floor(Math.random()*pool.length)];
+
+  // Global progress bar
+  const globalPct=Math.round(globalLocked.size/R.length*100);
+  document.getElementById('sesh-prog-fill').style.width=globalPct+'%';
+  document.getElementById('rc-global').textContent=`${globalLocked.size}/${R.length} освоено всего`;
+
+  // Next button text
+  const eraKeys=Object.keys(ERAS);
+  const idx=eraKeys.indexOf(activeEra);
+  const hasMore=idx>=0 && idx<eraKeys.length-1;
+  document.getElementById('es-next-btn').textContent=
+    lockedCount===sessionLog.length && hasMore ? 'Следующая эпоха →' : 'Ещё 10 правителей →';
+
+  if(lockedCount===sessionLog.length) confetti(50);
+  document.getElementById('end-screen').classList.add('show');
+}
+
+function buildErrorDots(wrongs){
+  if(wrongs===0) return`<div class="rc-dot clean" title="Без ошибок"></div>`;
+  const count=Math.min(wrongs,5);
+  let s='';
+  for(let i=0;i<count;i++) s+=`<div class="rc-dot ${wrongs<=2?'warn':'bad'}"></div>`;
+  if(wrongs>5) s+=`<div style="font-size:9px;color:var(--redb);margin-left:2px">+${wrongs-5}</div>`;
+  return s;
+}
+
+function continueAfterEnd(){
+  document.getElementById('end-screen').classList.remove('show');
+  const lockedCount=sessionLog.filter(e=>e.locked).length;
+  if(lockedCount===SESSION_SIZE){
+    // all done - go to next era or same era with new rulers
+    const eraKeys=Object.keys(ERAS);
+    const idx=eraKeys.indexOf(activeEra);
+    const next=eraKeys[idx+1];
+    startSession(next||activeEra);
+  } else {
+    // try again same era
+    startSession(activeEra);
+  }
+}
+
+function redrillWeak(){
+  document.getElementById('end-screen').classList.remove('show');
+  // force session with only the unlocked ones from this session
+  const weak=sessionLog.filter(e=>!e.locked).map(e=>e.ruler);
+  if(weak.length===0){startSession(activeEra);return;}
+
+  queue=[...weak].sort(()=>Math.random()-.5);
+  locked=new Set();scores={};
+  sessionC=0;sessionW=0;sessionWrongIds=new Set();
+  sessionLog=[];sessionLogMap={};
+  peekLives=3;comboCount=0;sessionStartTime=Date.now();
+  queue.forEach(r=>{
+    scores[r.id]={consec:0,wrong:0};
+    const entry={ruler:r,wrongs:0,timeStart:0,timeMs:0,locked:false};
+    sessionLog.push(entry);
+    sessionLogMap[r.id]=entry;
+  });
+  updateComboUI();updatePeekUI();updateQueueDots();nextRuler();
+}
+
+// ═══════════════════════════════════════════════
+//   FLASH / SHAKE / CONFETTI
+// ═══════════════════════════════════════════════
+function flashOv(id){
+  const el=document.getElementById(id);
+  el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'),130);
+}
+
+function appShake(){
+  const a=document.getElementById('app');
+  a.classList.add('shake');
+  setTimeout(()=>a.classList.remove('shake'),400);
+  // HAPTIC (IDEA 8)
+  haptic([80,40,80]);
+}
+
+// IDEA 8: Haptic feedback
+function haptic(pattern){
+  try{if(navigator.vibrate) navigator.vibrate(pattern);}catch{}
+}
+
+function confetti(n=30){
+  const cols=['#e8c060','#c8902a','#60e890','#f08060','#60a0e8','#e060c0'];
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');p.className='cp';
+    const dur=Math.random()*1.2+.8;
+    p.style.cssText=`left:${Math.random()*100}%;top:-8px;width:${Math.random()*7+3}px;height:${Math.random()*10+5}px;border-radius:${Math.random()>.5?'50%':'2px'};background:${cols[Math.floor(Math.random()*cols.length)]};--d:${dur}s;--dl:${Math.random()*.4}s;--r:${Math.random()*720}deg;--x:${(Math.random()-.5)*200}px`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),(dur+.6)*1000);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//   IDEA 10: LANDSCAPE LAYOUT FIX
+// ═══════════════════════════════════════════════
+function handleOrientation(){
+  const isLandscape=window.innerWidth>window.innerHeight&&window.innerHeight<500;
+  const left=document.getElementById('drill-left');
+  const right=document.getElementById('drill-right');
+  const drill=document.getElementById('drill');
+  if(isLandscape){
+    left.style.cssText='display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;overflow-y:auto;';
+    right.style.cssText='flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;';
+    drill.style.flexDirection='row';
+    drill.style.alignItems='center';
+    drill.style.gap='16px';
+  } else {
+    left.style.cssText='display:contents;';
+    right.style.cssText='display:contents;';
+    drill.style.flexDirection='column';
+    drill.style.alignItems='center';
+    drill.style.gap='0';
+  }
+}
+window.addEventListener('resize',handleOrientation);
+window.addEventListener('orientationchange',()=>setTimeout(handleOrientation,200));
+
+// ═══════════════════════════════════════════════
+//   KEYBOARD
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('start-screen').style.display==='none'||
+     document.getElementById('start-screen').classList.contains('hidden')){
+    if(e.key>='0'&&e.key<='9') ni(e.key);
+    if(e.key==='Backspace') nd();
+  }
+});
+
+// ═══════════════════════════════════════════════
+//   INIT
+// ═══════════════════════════════════════════════
+function init(){
+  // Fix iOS 100vh issue
+  const setVh=()=>{document.documentElement.style.setProperty('--real-vh',window.innerHeight*.01+'px');};
+  setVh();window.addEventListener('resize',setVh);
+
+  handleOrientation();
+  buildStart();
+}
+
+init();
+</script>
+</body>
+</html>
